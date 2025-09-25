@@ -1,0 +1,26 @@
+#!/bin/bash
+set -e
+
+VERSION=8.2
+IMAGE="runphp:$VERSION"
+HERE=`dirname "$0"`
+
+TGT="${1:-$PWD}"
+shift || true
+
+if [ -z "$(docker images -q $IMAGE 2> /dev/null)" ]; then
+  TMP=$(mktemp -d /tmp/runphp.XXXXXX)
+  export VERSION
+
+  cat "$HERE/Dockerfile" | envsubst > "$TMP/Dockerfile"
+  docker build "$TMP" -t "$IMAGE"
+  rm -r "$TMP" 2> /dev/null || true
+
+  echo ""
+  echo "Generated image $IMAGE"
+fi
+
+echo ""
+echo "Starting container with PHP $VERSION, mounting $TGT"
+echo ""
+docker run -it --rm --volume "$TGT:/app" "$@" "$IMAGE"
