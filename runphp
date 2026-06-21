@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-VERSION=8.2
+VERSION="${VERSION:-8.2}"
 IMAGE="runphp:$VERSION"
 HERE=`dirname "$0"`
 
